@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FABgaming — Innovating Roblox Experiences</title>
+  <meta name="description" content="FABgaming — Roblox Developer, GFX Artist, and Game Analyst. Bold, futuristic, and interactive portfolio inspired by Nike's style." />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800;900&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS (Browser CDN) -->
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+
+  <style>
+    :root{
+      --bg:#07080c;
+      --bg2:#0a0b12;
+      --white:#f6f7fb;
+      --muted:#9aa4b2;
+      --blue:#34d1ff; /* electric blue */
+      --purple:#b26bff; /* neon purple */
+      --card:#0f1120;
+      --glass:rgba(255,255,255,0.06);
+    }
+    html{scroll-behavior:smooth}
+    body{background: radial-gradient(1200px 800px at 80% -10%, rgba(52,209,255,0.12), transparent 60%),
+                         radial-gradient(1000px 700px at -10% 20%, rgba(178,107,255,0.12), transparent 55%),
+                         linear-gradient(180deg, var(--bg), var(--bg2));
+         color:var(--white);
+         font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+    }
+    .font-display{font-family: Montserrat, Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;}
+
+    /* Subtle noise overlay */
+    body::after{content:""; position:fixed; inset:0; pointer-events:none; opacity:.06; mix-blend-mode:soft-light; background-image:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 120 120"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="2" stitchTiles="stitch"/></filter><rect width="120" height="120" filter="url(%23n)" opacity="0.35"/></svg>');}
+
+    /* Reveal on scroll */
+    .reveal{opacity:0; transform: translateY(24px) scale(.98); transition: opacity .8s ease, transform .8s cubic-bezier(.22,1,.36,1);} 
+    .reveal.visible{opacity:1; transform: translateY(0) scale(1);} 
+
+    /* Buttons */
+    .btn-primary{position:relative; isolation:isolate; background:linear-gradient(135deg, var(--blue), var(--purple)); color:#0b0c12; font-weight:800; letter-spacing:.02em;}
+    .btn-primary::before{content:""; position:absolute; inset:-2px; z-index:-1; filter: blur(16px); background:linear-gradient(135deg, rgba(52,209,255,.7), rgba(178,107,255,.7)); opacity:.65;}
+    .btn-ghost{background:transparent; border:1px solid rgba(255,255,255,.12);} 
+    .btn-ghost:hover{border-color: rgba(255,255,255,.36);} 
+
+    /* Neon text glow */
+    .neon{ text-shadow: 0 0 12px rgba(52,209,255,.55), 0 0 28px rgba(178,107,255,.35);} 
+
+    /* Hero canvas wraps */
+    #hero-wrap { position:relative; overflow:hidden; }
+    #hero-canvas{ position:absolute; inset:0; width:100%; height:100%; display:block; filter: drop-shadow(0 0 24px rgba(52,209,255,.15)); }
+
+    /* Floating glow orbs in hero */
+    .orb{ position:absolute; width:42vmin; height:42vmin; border-radius:50%; filter: blur(60px); opacity:.25; mix-blend-mode:screen;}
+    .orb.blue{ background: radial-gradient(circle at 30% 30%, rgba(52,209,255,.85), rgba(52,209,255,0) 60%);} 
+    .orb.purple{ background: radial-gradient(circle at 70% 70%, rgba(178,107,255,.9), rgba(178,107,255,0) 60%);} 
+    @keyframes float { 0%{ transform: translate3d(0,0,0);} 50%{ transform: translate3d(0,-12px,0);} 100%{ transform: translate3d(0,0,0);} }
+    .float{ animation: float 6s ease-in-out infinite; }
+
+    /* Tilt card effect */
+    .tilt{ transform-style: preserve-3d; transition: transform .25s ease, box-shadow .25s ease; will-change: transform;}
+    .tilt::after{ content:""; position:absolute; inset:-1px; border-radius:16px; background: radial-gradient(220px 140px at var(--mx,50%) var(--my,50%), rgba(52,209,255,.25), rgba(178,107,255,.18) 40%, transparent 65%); opacity:0; transition:opacity .25s ease; pointer-events:none;}
+    .tilt:hover::after{ opacity:1;}
+
+    /* Modal */
+    .modal-backdrop{ background: radial-gradient(1200px 800px at 50% -20%, rgba(52,209,255,.12), transparent 60%), rgba(3,6,16,.72); backdrop-filter: blur(8px);} 
+    .modal-enter{ opacity:0; transform: translateY(24px) scale(.98);} 
+    .modal-enter.active{ opacity:1; transform: translateY(0) scale(1); transition: all .5s cubic-bezier(.22,1,.36,1);} 
+
+    /* Inputs */
+    .input{ background: rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.1); border-radius:12px; color:var(--white); padding:14px 16px; outline:none; width:100%; transition: border-color .2s ease, box-shadow .2s ease;}
+    .input:focus{ border-color: rgba(52,209,255,.65); box-shadow: 0 0 0 6px rgba(52,209,255,.08), inset 0 0 0 1px rgba(178,107,255,.45);} 
+    textarea.input{ min-height:140px; resize:vertical;}
+
+    /* Footer logo flicker */
+    @keyframes flicker{ 0%{ opacity:.9; text-shadow:0 0 16px rgba(52,209,255,.6), 0 0 40px rgba(178,107,255,.4);} 49%{ opacity:1;} 50%{ opacity:.85;} 52%{ opacity:1;} 100%{ opacity:.95; text-shadow:0 0 22px rgba(52,209,255,.7), 0 0 60px rgba(178,107,255,.45);} }
+
+    /* Section divider glow */
+    .divider-glow{ height:1px; background: linear-gradient(90deg, transparent, rgba(52,209,255,.35), rgba(178,107,255,.35), transparent);} 
+
+    /* Utility shadow neon */
+    .shadow-neon{ box-shadow: 0 8px 24px rgba(52,209,255,.12), 0 16px 48px rgba(178,107,255,.12);} 
+
+    /* Mobile opt */
+    @media (max-width: 640px){ .hero-title{ font-size: 13vw; }}
+  </style>
+</head>
+<body class="antialiased selection:bg-cyan-400/20 selection:text-cyan-100">
+  <!-- Navigation -->
+  <header class="fixed top-0 inset-x-0 z-40">
+    <div class="mx-auto max-w-7xl px-6">
+      <div class="mt-4 flex items-center justify-between rounded-2xl border border-white/10 bg-white/5 backdrop-blur supports-[backdrop-filter]:bg-white/5 py-3.5 px-5">
+        <a href="#top" class="flex items-center gap-3">
+          <div class="h-8 w-8 rounded-full bg-gradient-to-br from-cyan-400 to-fuchsia-500 shadow-neon"></div>
+          <span class="font-display font-extrabold tracking-wide text-white text-lg">FABgaming</span>
+        </a>
+        <nav class="hidden md:flex items-center gap-6 text-sm text-white/80">
+          <a class="hover:text-white transition" href="#about">About</a>
+          <a class="hover:text-white transition" href="#skills">Skills</a>
+          <a class="hover:text-white transition" href="#projects">Projects</a>
+          <a class="hover:text-white transition" href="#contact">Contact</a>
+        </nav>
+        <a href="#projects" class="hidden sm:inline-flex btn-ghost px-4 py-2 rounded-xl text-white/90">See Work</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section id="top" class="min-h-[100svh] flex items-center relative" aria-label="Hero">
+    <div id="hero-wrap" class="absolute inset-0 -z-10">
+      <canvas id="hero-canvas"></canvas>
+      <div class="orb blue" data-parallax data-speed="12" style="top:10%; left:-6%;"></div>
+      <div class="orb purple" data-parallax data-speed="18" style="bottom:-10%; right:-8%;"></div>
+    </div>
+
+    <div class="mx-auto max-w-7xl px-6 pt-28 pb-24 w-full">
+      <div class="grid lg:grid-cols-2 items-center gap-12">
+        <div class="reveal">
+          <span class="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-white/70">Innovating Roblox Experiences
+            <svg class="h-3.5 w-3.5 text-cyan-300" viewBox="0 0 24 24" fill="currentColor"><path d="M13.172 7l-5.364 5.364 1.414 1.414L16 8.414V13h2V5h-8v2z"/></svg>
+          </span>
+          <h1 class="hero-title font-display font-black text-[8.5vw] leading-[0.95] md:text-[6rem] tracking-tight mt-5 neon">FABgaming</h1>
+          <p class="mt-4 text-white/70 text-lg">Roblox Developer | GFX Artist | Game Analyst</p>
+          <div class="mt-8 flex flex-wrap gap-4">
+            <a href="#projects" class="btn-primary rounded-xl px-6 py-3 shadow-neon">Explore Projects</a>
+            <a href="#contact" class="btn-ghost rounded-xl px-6 py-3 text-white/90">Contact Me</a>
+          </div>
+        </div>
+        <div class="relative h-[44vh] lg:h-[56vh] reveal">
+          <!-- Parallax rings -->
+          <div data-parallax data-speed="10" class="absolute inset-0 -z-0 flex items-center justify-center">
+            <div class="size-72 md:size-96 rounded-full border border-cyan-400/30"></div>
+          </div>
+          <div data-parallax data-speed="16" class="absolute inset-0 -z-0 flex items-center justify-center">
+            <div class="size-44 md:size-60 rounded-full border border-fuchsia-400/30"></div>
+          </div>
+          <div class="absolute inset-0 -z-10 rounded-3xl bg-gradient-to-b from-white/5 to-transparent border border-white/10"></div>
+          <div class="absolute inset-0 grid place-items-center">
+            <div class="text-center">
+              <div class="inline-flex items-center gap-2 bg-gradient-to-br from-cyan-400/10 to-fuchsia-500/10 border border-white/10 rounded-2xl px-4 py-2">
+                <svg class="h-4 w-4 text-cyan-300" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3 7h7l-5.5 4 2.5 7-7-4.5L5 20l2.5-7L2 9h7z"/></svg>
+                <span class="text-white/80 text-sm">Subtle motion. Big impact.</span>
+              </div>
+              <p class="mt-4 text-white/60">Clean, minimal, and boldly futuristic — inspired by Nike’s design energy.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-16 flex items-center gap-3 text-white/60 text-sm reveal">
+        <div class="h-px flex-1 divider-glow"></div>
+        <span>Scroll</span>
+        <svg class="h-4 w-4 text-white/60" viewBox="0 0 24 24" fill="currentColor"><path d="M12 5v14m0 0l-7-7m7 7l7-7"/></svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- About -->
+  <section id="about" class="py-24 md:py-32">
+    <div class="mx-auto max-w-7xl px-6">
+      <div class="grid lg:grid-cols-2 gap-12 items-center">
+        <div class="order-2 lg:order-1 reveal">
+          <h2 class="font-display text-3xl md:text-4xl font-extrabold tracking-tight">About</h2>
+          <p class="mt-4 text-white/70 leading-relaxed">I’m a passionate Roblox developer focused on crafting immersive gameplay, optimizing monetization, and creating stunning GFX visuals. I love analyzing what makes games successful and helping others achieve their dream games.</p>
+          <div class="mt-8 grid sm:grid-cols-3 gap-4 text-center">
+            <div class="rounded-2xl border border-white/10 bg-white/5 p-4"><div class="text-2xl font-black text-cyan-300">50+ </div><div class="text-xs text-white/60">Assets Designed</div></div>
+            <div class="rounded-2xl border border-white/10 bg-white/5 p-4"><div class="text-2xl font-black text-fuchsia-300">15+ </div><div class="text-xs text-white/60">Projects Consulted</div></div>
+            <div class="rounded-2xl border border-white/10 bg-white/5 p-4"><div class="text-2xl font-black text-cyan-300">∞ </div><div class="text-xs text-white/60">Ideas Shipped</div></div>
+          </div>
+        </div>
+        <div class="order-1 lg:order-2 relative reveal">
+          <div class="relative rounded-3xl border border-white/10 bg-gradient-to-br from-white/5 to-transparent p-1">
+            <div class="rounded-[22px] bg-[radial-gradient(1200px_800px_at_50%_-10%,rgba(52,209,255,.08),transparent_60%),linear-gradient(180deg,#0b0d16,#0e1020)] p-6">
+              <div class="aspect-[4/3] w-full rounded-xl overflow-hidden border border-white/10 shadow-neon">
+                <img class="w-full h-full object-cover opacity-90" src="https://images.unsplash.com/photo-1542751110-97427bbecf20?q=80&w=1600&auto=format&fit=crop" alt="Neon abstract inspiration"/>
+              </div>
+              <div class="mt-4 flex items-center justify-between text-white/70 text-sm">
+                <span>Design • Gameplay • Strategy</span>
+                <span class="inline-flex items-center gap-1 text-cyan-300"><svg class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor"><path d="M13.172 7l-5.364 5.364 1.414 1.414L16 8.414V13h2V5h-8v2z"/></svg>fast & fluid</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Skills -->
+  <section id="skills" class="py-24 md:py-32">
+    <div class="mx-auto max-w-7xl px-6">
+      <div class="reveal text-center">
+        <h2 class="font-display text-3xl md:text-4xl font-extrabold tracking-tight">Skills</h2>
+        <p class="mt-3 text-white/70">Bold visuals. Smart systems. Reliable delivery.</p>
+      </div>
+      <div class="mt-10 grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <!-- Card 1 -->
+        <div class="relative rounded-2xl border border-white/10 bg-white/5 p-1 shadow-neon reveal">
+          <div class="tilt group relative rounded-xl h-full overflow-hidden bg-[linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.02))] p-5" data-tilt>
+            <div class="flex flex-col h-full">
+              <div class="flex items-center justify-between">
+                <span class="text-cyan-300 font-bold">GFX Artist</span>
+                <svg class="h-5 w-5 text-cyan-300" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3 7h7l-5.5 4 2.5 7-7-4.5L5 20l2.5-7L2 9h7z"/></svg>
+              </div>
+              <p class="mt-3 text-white/70 text-sm">High-impact thumbnails, icons, and branding with neon depth and clarity.</p>
+              <div class="mt-auto pt-4 text-xs text-white/50">Tools: Blender, Photoshop, Photopea</div>
+            </div>
+          </div>
+        </div>
+        <!-- Card 2 -->
+        <div class="relative rounded-2xl border border-white/10 bg-white/5 p-1 shadow-neon reveal">
+          <div class="tilt group relative rounded-xl h-full overflow-hidden bg-[linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.02))] p-5" data-tilt>
+            <div class="flex flex-col h-full">
+              <div class="flex items-center justify-between">
+                <span class="text-fuchsia-300 font-bold">Monetization Expert & Game Analyst</span>
+                <svg class="h-5 w-5 text-fuchsia-300" viewBox="0 0 24 24" fill="currentColor"><path d="M3 13h2a9 9 0 0018 0h-2a7 7 0 11-14 0z"/></svg>
+              </div>
+              <p class="mt-3 text-white/70 text-sm">Systems that respect players and maximize retention, ARPDAU, and LTV.</p>
+              <div class="mt-auto pt-4 text-xs text-white/50">Metrics: Onboarding • Economy • UX Funnels</div>
+            </div>
+          </div>
+        </div>
+        <!-- Card 3 -->
+        <div class="relative rounded-2xl border border-white/10 bg-white/5 p-1 shadow-neon reveal">
+          <div class="tilt group relative rounded-xl h-full overflow-hidden bg-[linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.02))] p-5" data-tilt>
+            <div class="flex flex-col h-full">
+              <div class="flex items-center justify-between">
+                <span class="text-cyan-300 font-bold">Beginner Builder</span>
+                <svg class="h-5 w-5 text-cyan-300" viewBox="0 0 24 24" fill="currentColor"><path d="M4 4h16v2H4zm0 7h16v2H4zm0 7h16v2H4z"/></svg>
+              </div>
+              <p class="mt-3 text-white/70 text-sm">Clean low-poly environments optimized for performance and style.</p>
+              <div class="mt-auto pt-4 text-xs text-white/50">Focus: Scale • Composition • Readability</div>
+            </div>
+          </div>
+        </div>
+        <!-- Card 4 -->
+        <div class="relative rounded-2xl border border-white/10 bg-white/5 p-1 shadow-neon reveal">
+          <div class="tilt group relative rounded-xl h-full overflow-hidden bg-[linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.02))] p-5" data-tilt>
+            <div class="flex flex-col h-full">
+              <div class="flex items-center justify-between">
+                <span class="text-fuchsia-300 font-bold">Game Tester & Bug Fixer</span>
+                <svg class="h-5 w-5 text-fuchsia-300" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3l2 3h4l-2 3 2 3h-4l-2 3-2-3H6l2-3-2-3h4z"/></svg>
+              </div>
+              <p class="mt-3 text-white/70 text-sm">Find, reproduce, and fix gameplay issues with a data-driven approach.</p>
+              <div class="mt-auto pt-4 text-xs text-white/50">QA: Test Plans • Reports • Iteration</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Projects -->
+  <section id="projects" class="py-24 md:py-32">
+    <div class="mx-auto max-w-7xl px-6">
+      <div class="reveal text-center">
+        <h2 class="font-display text-3xl md:text-4xl font-extrabold tracking-tight">Projects</h2>
+        <p class="mt-3 text-white/70">Artwork and game visuals connected to DeviantArt.</p>
+      </div>
+      <div id="projects-grid" class="mt-10 grid sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+    </div>
+  </section>
+
+  <!-- Contact -->
+  <section id="contact" class="py-24 md:py-32">
+    <div class="mx-auto max-w-7xl px-6">
+      <div class="grid lg:grid-cols-2 gap-12 items-start">
+        <div class="reveal">
+          <h2 class="font-display text-3xl md:text-4xl font-extrabold tracking-tight">Let’s Create Something Awesome!</h2>
+          <p class="mt-3 text-white/70">Have a project in mind or need GFX support? Reach out and let’s build a standout Roblox experience.</p>
+          <div class="mt-6 flex gap-4">
+            <a href="https://www.roblox.com/users/123456789/profile" target="_blank" rel="noopener" class="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-white/80 hover:text-white hover:border-white/20">
+              <svg class="h-5 w-5 text-cyan-300" viewBox="0 0 24 24" fill="currentColor"><path d="M4 4h8l8 8v8H12L4 12V4zm4 4v4l4 4h4l-8-8H8z"/></svg>
+              Roblox Profile
+            </a>
+            <a href="https://www.deviantart.com/fabgaming" target="_blank" rel="noopener" class="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-white/80 hover:text-white hover:border-white/20">
+              <svg class="h-5 w-5 text-fuchsia-300" viewBox="0 0 24 24" fill="currentColor"><path d="M7 2h5l2 4h3l-2 4h-3l-2 4H7l2-4H6l2-4h3L9 2z"/></svg>
+              DeviantArt Gallery
+            </a>
+          </div>
+        </div>
+        <div class="reveal">
+          <form id="contact-form" class="space-y-4 rounded-2xl border border-white/10 bg-white/5 p-6 shadow-neon">
+            <div>
+              <label class="block text-sm text-white/70 mb-2" for="name">Name</label>
+              <input id="name" name="name" type="text" class="input" placeholder="Your name" required />
+            </div>
+            <div>
+              <label class="block text-sm text-white/70 mb-2" for="email">Email</label>
+              <input id="email" name="email" type="email" class="input" placeholder="you@example.com" required />
+            </div>
+            <div>
+              <label class="block text-sm text-white/70 mb-2" for="message">Message</label>
+              <textarea id="message" name="message" class="input" placeholder="Tell me about your project..." required></textarea>
+            </div>
+            <div class="flex items-center gap-3 pt-2">
+              <button class="btn-primary rounded-xl px-6 py-3" type="submit">Send Message</button>
+              <span id="form-status" class="text-sm text-white/60"></span>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="relative overflow-hidden">
+    <div class="absolute inset-0 opacity-60" aria-hidden="true" style="background: radial-gradient(60% 80% at 50% 120%, rgba(52,209,255,.15), transparent), radial-gradient(60% 80% at 50% -20%, rgba(178,107,255,.12), transparent);"></div>
+    <div class="mx-auto max-w-7xl px-6 py-12 relative">
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div class="flex items-center gap-3">
+          <div class="grid place-items-center size-10 rounded-xl bg-gradient-to-br from-cyan-400/20 to-fuchsia-500/20 border border-white/10">
+            <span class="font-display font-black text-xl neon animate-[flicker_3s_ease-in-out_infinite]">FAB</span>
+          </div>
+          <div class="text-white/70 text-sm">© <span id="year"></span> FABgaming. All rights reserved.</div>
+        </div>
+        <div class="text-xs text-white/50">Built with a bold, futuristic aesthetic — smooth, minimal, and interactive.</div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Project Modal -->
+  <div id="modal" class="hidden fixed inset-0 z-50">
+    <div class="modal-backdrop absolute inset-0"></div>
+    <div class="relative mx-auto max-w-3xl w-[92%] mt-24 md:mt-28">
+      <div id="modal-card" class="modal-enter rounded-2xl border border-white/10 bg-[rgba(14,16,32,.9)] backdrop-blur p-2 shadow-neon">
+        <div class="relative overflow-hidden rounded-xl">
+          <img id="modal-img" src="" alt="Project" class="w-full max-h-[70vh] object-cover"/>
+          <button id="modal-close" class="absolute top-3 right-3 inline-flex items-center justify-center size-9 rounded-full bg-black/60 text-white hover:bg-black/80">
+            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor"><path d="M6 6l12 12M6 18L18 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </button>
+        </div>
+        <div class="p-4 flex items-center justify-between gap-4">
+          <div>
+            <h3 id="modal-title" class="font-display text-lg font-extrabold"></h3>
+            <p id="modal-desc" class="text-sm text-white/70 mt-1"></p>
+          </div>
+          <a id="modal-link" target="_blank" rel="noopener" class="btn-primary rounded-xl px-4 py-2 whitespace-nowrap">View on DeviantArt</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Year
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // IntersectionObserver reveals
+    const revealObserver = new IntersectionObserver((entries)=>{
+      entries.forEach(e=>{
+        if(e.isIntersecting){ e.target.classList.add('visible'); revealObserver.unobserve(e.target); }
+      })
+    }, { threshold:.15, rootMargin: '0px 0px -10% 0px' });
+    document.querySelectorAll('.reveal').forEach(el=>revealObserver.observe(el));
+
+    // Mouse parallax
+    const parallaxEls = [...document.querySelectorAll('[data-parallax]')];
+    const clamp = (n, min, max)=> Math.min(max, Math.max(min, n));
+    let pmx = 0, pmy = 0; let raf = null;
+    window.addEventListener('mousemove', (e)=>{
+      const x = (e.clientX / window.innerWidth) * 2 - 1;
+      const y = (e.clientY / window.innerHeight) * 2 - 1;
+      pmx = x; pmy = y;
+      if(!raf){ raf = requestAnimationFrame(()=>{
+        parallaxEls.forEach(el=>{
+          const speed = parseFloat(el.getAttribute('data-speed')) || 10;
+          el.style.transform = `translate3d(${(-pmx*speed)}px, ${(-pmy*speed)}px, 0)`;
+        });
+        raf = null;
+      });}
+    }, { passive:true });
+
+    // Tilt Cards (intentional small rotation + glow follows mouse)
+    function attachTilt(el){
+      const r = el.getBoundingClientRect();
+      let ticking = false;
+      function onMove(ev){
+        const rect = el.getBoundingClientRect();
+        const x = (ev.clientX - rect.left) / rect.width; // 0..1
+        const y = (ev.clientY - rect.top) / rect.height; // 0..1
+        if(!ticking){ requestAnimationFrame(()=>{
+          const rx = (0.5 - y) * 10; // rotateX
+          const ry = (x - 0.5) * 12; // rotateY
+          el.style.setProperty('--mx', `${x*100}%`);
+          el.style.setProperty('--my', `${y*100}%`);
+          el.style.transform = `perspective(800px) rotateX(${rx}deg) rotateY(${ry}deg)`;
+          el.style.boxShadow = `0 12px 24px rgba(52,209,255,.08), 0 24px 60px rgba(178,107,255,.12)`;
+          ticking = false;
+        }); ticking = true; }
+      }
+      function onLeave(){ el.style.transform = 'perspective(800px) rotateX(0deg) rotateY(0deg)'; el.style.boxShadow='none'; }
+      el.addEventListener('mousemove', onMove);
+      el.addEventListener('mouseleave', onLeave);
+    }
+    document.querySelectorAll('[data-tilt]').forEach(attachTilt);
+
+    // Projects data (replace links with your actual DeviantArt pieces)
+    const projects = [
+      { title:'Neon City Thumbnail', img:'https://images.unsplash.com/photo-1542751110-97427bbecf20?q=80&w=1600&auto=format&fit=crop', link:'https://www.deviantart.com/', description:'High-contrast cityscape thumbnail for an action game.' },
+      { title:'Sci‑Fi Lobby Render', img:'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?q=80&w=1600&auto=format&fit=crop', link:'https://www.deviantart.com/', description:'GFX render focusing on luminous accents and depth.' },
+      { title:'Obby Icon Set', img:'https://images.unsplash.com/photo-1542487358-9601c0ae39a9?q=80&w=1600&auto=format&fit=crop', link:'https://www.deviantart.com/', description:'Icon treatments optimized for clarity at small sizes.' },
+      { title:'Low‑Poly Desert Map', img:'https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?q=80&w=1600&auto=format&fit=crop', link:'https://www.deviantart.com/', description:'Performance-friendly environment with bold shapes.' },
+      { title:'Economy UI Pass', img:'https://images.unsplash.com/photo-1558655146-d09347e92766?q=80&w=1600&auto=format&fit=crop', link:'https://www.deviantart.com/', description:'Monetization UX with clean hierarchy and feedback.' },
+      { title:'Bug Bash Session', img:'https://images.unsplash.com/photo-1518779578993-ec3579fee39f?q=80&w=1600&auto=format&fit=crop', link:'https://www.deviantart.com/', description:'QA notes and fixes across multiple gameplay loops.' }
+    ];
+
+    const grid = document.getElementById('projects-grid');
+    projects.forEach((p, i)=>{
+      const card = document.createElement('article');
+      card.className = 'reveal group relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 shadow-neon';
+      card.innerHTML = `
+        <div class="relative aspect-[4/3] overflow-hidden">
+          <img src="${p.img}" alt="${p.title}" class="h-full w-full object-cover transition duration-500 group-hover:scale-105 group-hover:opacity-90"/>
+          <div class="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition duration-500 bg-gradient-to-t from-black/60 via-black/0"></div>
+        </div>
+        <div class="p-4 flex items-center justify-between gap-3">
+          <div>
+            <h3 class="font-display font-extrabold">${p.title}</h3>
+            <p class="text-white/60 text-sm">${p.description}</p>
+          </div>
+          <button class="btn-ghost rounded-xl px-3 py-2 text-white/90 border-white/15">Preview</button>
+        </div>`;
+      card.querySelector('button').addEventListener('click', ()=> openModal(p));
+      card.addEventListener('click', (e)=>{ if(e.target.tagName !== 'BUTTON') openModal(p); });
+      grid.appendChild(card);
+    });
+
+    // Modal logic
+    const modal = document.getElementById('modal');
+    const modalCard = document.getElementById('modal-card');
+    const modalImg = document.getElementById('modal-img');
+    const modalTitle = document.getElementById('modal-title');
+    const modalDesc = document.getElementById('modal-desc');
+    const modalLink = document.getElementById('modal-link');
+    const modalClose = document.getElementById('modal-close');
+
+    function openModal(p){
+      modalImg.src = p.img; modalTitle.textContent = p.title; modalDesc.textContent = p.description; modalLink.href = p.link;
+      modal.classList.remove('hidden');
+      // animate in
+      requestAnimationFrame(()=>{ modalCard.classList.add('active'); });
+      document.body.style.overflow='hidden';
+    }
+    function closeModal(){ modalCard.classList.remove('active'); setTimeout(()=>{ modal.classList.add('hidden'); document.body.style.overflow=''; }, 250); }
+    modalClose.addEventListener('click', closeModal);
+    modal.addEventListener('click', (e)=>{ if(e.target === modal) closeModal(); });
+    window.addEventListener('keydown', (e)=>{ if(e.key==='Escape' && !modal.classList.contains('hidden')) closeModal(); });
+
+    // Contact form (mailto)
+    const form = document.getElementById('contact-form');
+    const statusEl = document.getElementById('form-status');
+    form.addEventListener('submit', (e)=>{
+      e.preventDefault();
+      const name = form.name.value.trim();
+      const email = form.email.value.trim();
+      const message = form.message.value.trim();
+      if(!name || !email || !message){ statusEl.textContent = 'Please fill in all fields.'; return; }
+      const subject = encodeURIComponent(`Portfolio Inquiry from ${name}`);
+      const body = encodeURIComponent(`Hi FABgaming,%0D%0A%0D%0A${message}%0D%0A%0D%0AFrom: ${name}%0D%0AEmail: ${email}`);
+      const mailto = `mailto:fabgaming@contact.me?subject=${subject}&body=${body}`;
+      window.location.href = mailto;
+      statusEl.textContent = 'Opening your email client...';
+      setTimeout(()=>{ statusEl.textContent = 'Thanks! If your email client did not open, mail me at fabgaming@contact.me'; }, 2500);
+      form.reset();
+    });
+
+    // HERO CANVAS: abstract light streaks + subtle grid
+    const canvas = document.getElementById('hero-canvas');
+    const ctx = canvas.getContext('2d');
+    let dpr = Math.min(2, window.devicePixelRatio || 1);
+    let cw, ch; let streaks = []; let gridOffset = 0;
+
+    function resize(){
+      cw = canvas.clientWidth; ch = canvas.clientHeight;
+      canvas.width = Math.floor(cw * dpr); canvas.height = Math.floor(ch * dpr);
+      ctx.setTransform(dpr,0,0,dpr,0,0);
+      initStreaks();
+    }
+    window.addEventListener('resize', resize);
+
+    function rand(a,b){ return Math.random()*(b-a)+a; }
+    function initStreaks(){
+      const count = Math.floor((cw*ch)/23000); // density-based
+      streaks = new Array(count).fill(0).map(()=>({
+        x: rand(-cw*0.2, cw*1.2), y: rand(-ch*0.2, ch*1.2),
+        vx: rand(-0.6, 0.6), vy: rand(-0.1, 0.1),
+        len: rand(40, 140),
+        hue: Math.random()<0.5 ? 195 : 275,
+        alpha: rand(0.35, 0.9),
+        width: rand(1, 2.4)
+      }));
+    }
+
+    function drawGrid(){
+      const spacing = 44; gridOffset += 0.2; if(gridOffset>spacing) gridOffset=0;
+      ctx.save();
+      ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+      ctx.lineWidth = 1;
+      // perspective-ish vertical lines
+      for(let x=-spacing*2; x<cw+spacing*2; x+=spacing){
+        ctx.beginPath();
+        ctx.moveTo(x + gridOffset, 0);
+        ctx.lineTo(x - gridOffset, ch);
+        ctx.stroke();
+      }
+      // horizontal lines
+      for(let y=0; y<ch; y+=spacing){
+        ctx.beginPath();
+        ctx.moveTo(0, y + ((y/ch)-.5)*gridOffset);
+        ctx.lineTo(cw, y - ((y/ch)-.5)*gridOffset);
+        ctx.stroke();
+      }
+      ctx.restore();
+    }
+
+    function draw(){
+      ctx.clearRect(0,0,cw,ch);
+      drawGrid();
+      ctx.globalCompositeOperation = 'lighter';
+      streaks.forEach(s=>{
+        s.x += s.vx; s.y += s.vy;
+        if(s.x<-200 || s.x>cw+200 || s.y<-200 || s.y>ch+200){
+          // respawn
+          s.x = Math.random()<0.5 ? -50 : cw+50; s.y = rand(0,ch);
+          s.vx = rand(-0.6, 0.6) * (s.x<0?1:-1); s.vy = rand(-0.2,0.2);
+        }
+        const grad = ctx.createLinearGradient(s.x, s.y, s.x + s.len, s.y + s.len*0.2);
+        const c1 = `hsla(${s.hue}, 100%, 65%, ${s.alpha})`;
+        const c2 = `hsla(${s.hue===195?275:195}, 100%, 65%, ${s.alpha*0.8})`;
+        grad.addColorStop(0, 'transparent');
+        grad.addColorStop(0.15, c1);
+        grad.addColorStop(0.65, c2);
+        grad.addColorStop(1, 'transparent');
+        ctx.strokeStyle = grad;
+        ctx.lineWidth = s.width;
+        ctx.beginPath();
+        ctx.moveTo(s.x, s.y);
+        ctx.lineTo(s.x + s.len, s.y + s.len*0.2);
+        ctx.stroke();
+      });
+      ctx.globalCompositeOperation = 'source-over';
+      requestAnimationFrame(draw);
+    }
+
+    resize(); draw();
+  </script>
+</body>
+</html>
